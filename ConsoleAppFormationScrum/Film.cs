@@ -109,6 +109,12 @@ namespace ConsoleAppFormationScrum
                 }
 
                 listFilm.RemoveAt(numerofilm - 1);
+
+                var writer = new StreamWriter("films.xml", false);
+
+                serializer.Serialize(writer, listFilm);
+
+                writer.Close();
             }
             else
             {
