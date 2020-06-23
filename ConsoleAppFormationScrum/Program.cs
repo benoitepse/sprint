@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ConsoleAppFormationScrum;
+using System;
 using System.Text.RegularExpressions;
 
 namespace Sprint0
@@ -27,8 +28,10 @@ namespace Sprint0
                 switch (menuFilm)
                 {
                     case "1":
+                        Film.encodageFilm();
                         break;
                     case "2":
+                        Film.afficherFilm();
                         break;
                     case "3":
                         break;
