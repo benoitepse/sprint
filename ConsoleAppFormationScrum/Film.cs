@@ -50,16 +50,40 @@ namespace ConsoleAppFormationScrum
             reader.Close();
 
             Film f = new Film();
+
             Console.WriteLine("Titre du Film :");
             f.titre = Console.ReadLine();
+
             Console.WriteLine("Année de Production :");
-            f.annee = int.Parse(Console.ReadLine());
+            int annee;
+            while (!int.TryParse(Console.ReadLine(), out annee))
+            {
+                Console.WriteLine("-> Entrez un nombre ");
+            }
+            f.annee = annee;
+
+
+
             Console.WriteLine("Nom du Réalisateur :");
             f.realisateur = Console.ReadLine();
-            Console.WriteLine("Votre Note :");
-            f.note = int.Parse(Console.ReadLine());
-            Console.WriteLine("Votre Critique :");
-            f.critique = Console.ReadLine();
+
+            
+            Console.WriteLine("Votre Note  : ");
+            int note;
+            while (!int.TryParse(Console.ReadLine(), out note))
+            {
+                Console.WriteLine("-> Entrez un chiffre entier ");
+            }
+            f.note = note;
+            
+            
+
+            do 
+            {
+                Console.WriteLine("Votre Critique :  (entre 100 et 1000 caractères)");
+                f.critique = Console.ReadLine(); 
+            }  
+            while (f.critique.Length > 1000 || f.critique.Length < 100);
 
             listFilm.Add(f);
 
@@ -70,6 +94,12 @@ namespace ConsoleAppFormationScrum
 
             writer.Close();
         }
+
+
+
+
+
+
 
         public static void afficherFilm()
         {
@@ -85,37 +115,66 @@ namespace ConsoleAppFormationScrum
             XmlRootAttribute xRoot = new XmlRootAttribute();
             xRoot.ElementName = "films";
 
-
             XmlSerializer serializer = new XmlSerializer(typeof(List<Film>), xRoot);
             StreamReader reader = new StreamReader("films.xml");
             List<Film> listFilm = (List<Film>)serializer.Deserialize(reader);
             reader.Close();
 
-
-            if (listFilm.Any())
+            int numerofilm = -1;
+            do
             {
-                Console.WriteLine("Quelle film voulez-vous supprimer ?");
-                foreach (var Film in listFilm)
+                if (listFilm.Any())
                 {
-                    Console.WriteLine($"{listFilm.IndexOf(Film) + 1}. {Film.titre} ");
+                    Console.Clear();
+
+                    Console.WriteLine(" ----- Liste des Films ----- ");
+                    foreach (var Film in listFilm)
+                    {
+                        Console.WriteLine($"{listFilm.IndexOf(Film) + 1}. {Film.titre} ( {Film.annee} ) ");
+                    }
+                    
+
+                    while (numerofilm < 0 || numerofilm > listFilm.Count)
+                    {
+                        Console.WriteLine(" -> Quelle film voulez-vous visualiser ?");
+                        Console.WriteLine(" -> tapez 0 pour quitter ");
+                        int.TryParse(Console.ReadLine(), out numerofilm);
+                    }
+                    
+                    if (numerofilm < 0 || numerofilm > listFilm.Count) { 
+                        Console.Clear();
+                        Console.WriteLine(" ----- " + listFilm[numerofilm - 1].titre + " ----- ");
+                        Console.WriteLine(" Année:       " + listFilm[numerofilm - 1].annee);
+                        Console.WriteLine(" Réalisateur: " + listFilm[numerofilm - 1].realisateur);
+                        Console.WriteLine(" Note:        " + listFilm[numerofilm - 1].note);
+                        Console.WriteLine(" Critique:    " + listFilm[numerofilm - 1].critique);
+
+                        int numero = -1;
+                        while (numero < 0 || numero > listFilm.Count)
+                        {
+                            Console.WriteLine(" -> Que Voulez-vous faire ? 0 pour quitter et 1 pour supprimer le film ");
+                            int.TryParse(Console.ReadLine(), out numero);
+
+                            if (numero == 1) 
+                            {
+                                listFilm.RemoveAt(numerofilm - 1);
+                        
+                                var writer = new StreamWriter("films.xml", false);
+
+                                serializer.Serialize(writer, listFilm);
+
+                                writer.Close();
+                            } 
+                        }
+                    }
+
                 }
-
-                int.TryParse(Console.ReadLine(), out int numerofilm);
-
-                while (numerofilm <= 0 || numerofilm > listFilm.Count)
+                else
                 {
-                    Console.WriteLine("Quelle film voulez-vous supprimer ?");
-                    int.TryParse(Console.ReadLine(), out numerofilm);
+                    Console.WriteLine("Aucune film à supprimer");
+                    Console.ReadKey();
                 }
-
-                listFilm.RemoveAt(numerofilm - 1);
-            }
-            else
-            {
-                Console.WriteLine("Aucune film à supprimer");
-                Console.ReadKey();
-            }
-
+            } while (numerofilm != 0);
         }
 
         
